@@ -13,7 +13,7 @@ function Foods() {
     return <p>Loading...</p>;
   }
 
-  return <h1>Foods</h1>;
+  return <h1 className="text-3xl font-bold underline">Foods</h1>;
 }
 
 export default Foods;
