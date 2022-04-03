@@ -107,7 +107,7 @@ function NewFood() {
   };
 
   return (
-    <section className="w-full max-w-lg px-8 m-auto">
+    <section>
       <h1 className="text-3xl font-bold underline mb-12">New Food</h1>
       <form onSubmit={handleSubmit}>
         <label
