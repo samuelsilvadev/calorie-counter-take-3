@@ -19,7 +19,7 @@ function FoodDetails() {
         </h2>
         <form>
           <label htmlFor="calories" className="block  text-sm font-bold mb-2">
-            Name
+            Calories amount
           </label>
           <input
             type="text"
