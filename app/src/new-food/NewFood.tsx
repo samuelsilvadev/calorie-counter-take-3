@@ -107,9 +107,9 @@ function NewFood() {
   };
 
   return (
-    <>
-      <h1 className="text-3xl font-bold underline">New Food</h1>
-      <form onSubmit={handleSubmit} className="w-full max-w-lg px-8 m-auto">
+    <section className="w-full max-w-lg px-8 m-auto">
+      <h1 className="text-3xl font-bold underline mb-12">New Food</h1>
+      <form onSubmit={handleSubmit}>
         <label
           htmlFor="name"
           className="block text-gray-700 text-sm font-bold mb-2"
@@ -187,12 +187,12 @@ function NewFood() {
 
         <button
           disabled={isLoading}
-          className="block shadow bg-purple-500 hover:bg-purple-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4"
+          className="block shadow bg-purple-500 hover:bg-purple-400 focus:shadow-outline text-white font-bold py-2 px-4"
         >
           Save
         </button>
       </form>
-    </>
+    </section>
   );
 }
 
