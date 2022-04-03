@@ -1,5 +1,5 @@
 import { useQuery } from "react-query";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import FoodsWrapper from "./components/foods-wrapper";
 
 function getAllFoods() {
@@ -47,6 +47,7 @@ type TAllFoodsResponse = {
 };
 
 function Foods() {
+  const location = useLocation();
   const { isLoading, data, error } = useQuery<TAllFoodsResponse>(
     "foods",
     getAllFoods
@@ -89,8 +90,9 @@ function Foods() {
                   {portionAmount} {portionDisplayName} has {calories} calories
                 </h3>
                 <Link
-                  className="col-start-2 row-start-1 row-end-3 flex items-center justify-self-end shadow bg-purple-500 hover:bg-purple-400 focus:shadow-outline text-white font-bold py-2 px-4"
-                  to={`/`}
+                  className="col-start-2 row-start-1 row-end-3 flex items-center justify-self-end shadow bg-purple-500 hover:bg-purple-400 text-white font-bold py-2 px-4"
+                  to={`/food/${id}`}
+                  state={{ previousLocation: location }}
                 >
                   View details
                 </Link>
