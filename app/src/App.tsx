@@ -7,7 +7,6 @@ function App() {
     <Routes>
       <Route path="/" element={<Foods />} />
       <Route path="/new" element={<NewFood />} />
-      <Route path="/example" element={<h1>Example Route</h1>} />
     </Routes>
   );
 }
