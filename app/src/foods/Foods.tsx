@@ -1,5 +1,6 @@
 import { useQuery } from "react-query";
 import { Link } from "react-router-dom";
+import FoodsWrapper from "./components/foods-wrapper";
 
 function getAllFoods() {
   return fetch(process.env.REACT_APP_API_URL + "/foods").then((response) =>
@@ -46,16 +47,38 @@ type TAllFoodsResponse = {
 };
 
 function Foods() {
-  const { isLoading, data } = useQuery<TAllFoodsResponse>("foods", getAllFoods);
+  const { isLoading, data, error } = useQuery<TAllFoodsResponse>(
+    "foods",
+    getAllFoods
+  );
   const foods = data?.data ?? [];
 
   if (isLoading) {
-    return <p>Loading...</p>;
+    return (
+      <FoodsWrapper>
+        <p>Loading...</p>
+      </FoodsWrapper>
+    );
+  }
+
+  if (error) {
+    return (
+      <FoodsWrapper>
+        <p>Something went wrong, please try again later.</p>
+      </FoodsWrapper>
+    );
+  }
+
+  if (foods.length === 0) {
+    return (
+      <FoodsWrapper>
+        <p>No foods to display</p>
+      </FoodsWrapper>
+    );
   }
 
   return (
-    <section className="w-full max-w-lg px-8 m-auto">
-      <h1 className="text-3xl font-bold underline mb-12">Foods</h1>
+    <FoodsWrapper>
       <ul>
         {foods.map(
           ({ id, name, portionDisplayName, portionAmount, calories }) => (
@@ -76,7 +99,7 @@ function Foods() {
           )
         )}
       </ul>
-    </section>
+    </FoodsWrapper>
   );
 }
 
