@@ -1,5 +1,6 @@
 import { useQuery } from "react-query";
 import { Link, useLocation } from "react-router-dom";
+import { Food } from "../types/Food";
 import FoodsWrapper from "./components/foods-wrapper";
 
 function getAllFoods() {
@@ -7,35 +8,6 @@ function getAllFoods() {
     response.json()
   );
 }
-
-type Food = {
-  addedSugars: number;
-  alcohol: number;
-  calories: number;
-  darkGreenVegetables: number;
-  dryBeansPeas: number;
-  factor: number;
-  fruits: number;
-  grains: number;
-  id: string;
-  increment: number;
-  meats: number;
-  milk: number;
-  multiplier: number;
-  name: string;
-  oils: number;
-  orangeVegetables: number;
-  otherVegetables: number;
-  portion: number;
-  portionAmount: number;
-  portionDisplayName: string;
-  saturatedFats: number;
-  solidFats: number;
-  soy: number;
-  starchyVegetables: number;
-  vegetables: number;
-  wholeGrains: number;
-};
 
 type TAllFoodsResponse = {
   data: Food[];

@@ -1,8 +1,28 @@
 import { useEffect, useRef } from "react";
+import { useQuery } from "react-query";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { Food } from "../types/Food";
+
+function getFood(id: string) {
+  return fetch(process.env.REACT_APP_API_URL + "/foods/" + id).then(
+    (response) => response.json()
+  );
+}
+
+type TFoodResponse = {
+  data: Food;
+  error: boolean;
+  responseTimestamp: string;
+  status: boolean;
+  statusCode: number;
+  totalCount: number;
+};
 
 function FoodDetails() {
   const { id } = useParams<{ id: string }>();
+  const { data } = useQuery<TFoodResponse | null>(["food", id], () =>
+    id ? getFood(id) : null
+  );
   const navigate = useNavigate();
   const focusedElementBeforeOpenRef = useRef<HTMLElement | null>(null);
   const caloriesInputRef = useRef<HTMLInputElement | null>(null);
@@ -68,6 +88,8 @@ function FoodDetails() {
     };
   }, [navigate]);
 
+  const food = data?.data;
+
   return (
     <div className="fixed inset-0 w-full h-full bg-gray-500 bg-opacity-70 flex items-center justify-center">
       <div
@@ -81,11 +103,11 @@ function FoodDetails() {
           id="food-details-title"
           className="text-3xl font-bold underline mb-4"
         >
-          Food Details for: {id}
+          Food Details for: {food?.name}
         </h2>
         <form>
           <label htmlFor="calories" className="block  text-sm font-bold mb-2">
-            Calories amount
+            Amount of {food?.name} consumed:
           </label>
           <input
             type="text"
@@ -95,7 +117,7 @@ function FoodDetails() {
             ref={caloriesInputRef}
           />
           <button className="shadow bg-purple-500 hover:bg-purple-400 focus:shadow-outline text-white font-bold py-2 px-4 border-2 mr-2">
-            Save
+            Calculate calories
           </button>
           <Link
             to="/"
