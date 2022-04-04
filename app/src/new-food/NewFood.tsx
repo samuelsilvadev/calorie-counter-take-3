@@ -1,5 +1,8 @@
 import { ChangeEventHandler, FormEventHandler, useReducer } from "react";
 import { useMutation } from "react-query";
+import { queryClient } from "..";
+import type { TAllFoodsResponse } from "../foods/Foods";
+import type { Food } from "../types/Food";
 
 type NewFoodFormState = {
   name: string;
@@ -12,6 +15,14 @@ type NewFoodFormState = {
 type Action =
   | { type: "ON_CHANGE"; name: string; value: string }
   | { type: "RESET" };
+
+type TSaveFoodResponse = {
+  data: Food;
+  error: boolean;
+  responseTimestamp: string;
+  status: boolean;
+  statusCode: number;
+};
 
 function buildDefaultValues() {
   return {
@@ -39,7 +50,7 @@ function buildDefaultValues() {
   };
 }
 
-function saveFood(food: NewFoodFormState) {
+function saveFood(food: NewFoodFormState): Promise<TSaveFoodResponse> {
   return fetch(process.env.REACT_APP_API_URL + "/foods", {
     method: "POST",
     headers: {
@@ -85,8 +96,20 @@ function NewFood() {
   });
 
   const { mutate, isLoading } = useMutation(saveFood, {
-    onSuccess: () => {
+    onSuccess: (response) => {
       dispatch({ type: "RESET" });
+
+      const previousFoodsResponse =
+        queryClient.getQueryData<TAllFoodsResponse>("foods");
+
+      if (previousFoodsResponse) {
+        const updatedFoodsResponse: TAllFoodsResponse = {
+          ...previousFoodsResponse,
+          data: [response.data, ...(previousFoodsResponse?.data ?? [])],
+        };
+
+        queryClient.setQueryData("foods", updatedFoodsResponse);
+      }
     },
   });
 

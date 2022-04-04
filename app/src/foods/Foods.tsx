@@ -9,7 +9,7 @@ function getAllFoods() {
   );
 }
 
-type TAllFoodsResponse = {
+export type TAllFoodsResponse = {
   data: Food[];
   error: boolean;
   responseTimestamp: string;
