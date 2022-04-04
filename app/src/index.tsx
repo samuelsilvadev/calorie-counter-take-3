@@ -6,11 +6,19 @@ import { ReactQueryDevtools } from "react-query/devtools";
 import App from "./App";
 import "./index.css";
 
-const client = new QueryClient();
+const TEN_MINUTES = 60 * 1000 * 10;
+
+export const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: TEN_MINUTES,
+    },
+  },
+});
 
 ReactDOM.render(
   <React.StrictMode>
-    <QueryClientProvider client={client}>
+    <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <App />
       </BrowserRouter>
