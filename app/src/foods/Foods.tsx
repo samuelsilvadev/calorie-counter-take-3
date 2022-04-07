@@ -1,14 +1,43 @@
 import { FormEventHandler, useEffect, useState } from "react";
-import { useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import { Link, useLocation } from "react-router-dom";
+import Star from "../components/icons/Star";
 import { Food } from "../types/Food";
 import FoodSearchForm from "./components/food-search-form";
 import FoodsWrapper from "./components/foods-wrapper";
 
-function getAllFoods() {
+function getAllFoods(): Promise<TAllFoodsResponse> {
   return fetch(process.env.REACT_APP_API_URL + "/foods").then((response) =>
     response.json()
   );
+}
+
+function getAllFavoriteFoods(): Promise<TAllFavoriteFoodsResponse> {
+  return fetch(process.env.REACT_APP_API_URL + "/favorite-foods").then(
+    (response) => response.json()
+  );
+}
+
+function markFavoriteFood(foodId: string): Promise<TMarkFavoriteFoodResponse> {
+  return fetch(process.env.REACT_APP_API_URL + "/favorite-foods", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      food: foodId,
+      // TODO: replace with user id configured from REACT_APP_DEFAULT_USER_EMAIL
+      user: "624f5e78390cd24867281a8c",
+    }),
+  }).then((response) => response.json());
+}
+
+function unMarkFavoriteFood(
+  foodId: string
+): Promise<TUnMarkFavoriteFoodResponse> {
+  return fetch(process.env.REACT_APP_API_URL + "/favorite-foods/" + foodId, {
+    method: "DELETE",
+  }).then((response) => response.json());
 }
 
 export type TAllFoodsResponse = {
@@ -18,6 +47,40 @@ export type TAllFoodsResponse = {
   status: boolean;
   statusCode: number;
   totalCount: number;
+};
+
+export type TAllFavoriteFoodsResponse = {
+  data: TFavoriteFood[];
+  error: boolean;
+  responseTimestamp: string;
+  status: boolean;
+  statusCode: number;
+  totalCount: number;
+};
+
+type TFavoriteFood = {
+  createdAt: string;
+  food: string;
+  id: string;
+  updatedAt: string;
+  user: string;
+};
+
+type TMarkFavoriteFoodResponse = {
+  data: TFavoriteFood;
+  error: boolean;
+  responseTimestamp: string;
+  status: boolean;
+  statusCode: number;
+};
+
+type TUnMarkFavoriteFoodResponse = {
+  data: TFavoriteFood;
+  error: boolean;
+  responseTimestamp: string;
+  status: boolean;
+  statusCode: number;
+  deleted: boolean;
 };
 
 function Foods() {
@@ -32,7 +95,15 @@ function Foods() {
       },
     }
   );
+  const { data: favoriteFoodsData } = useQuery<TAllFavoriteFoodsResponse>(
+    "favorite-foods",
+    getAllFavoriteFoods
+  );
+  const { mutate: favorite } = useMutation(markFavoriteFood);
+  const { mutate: unFavorite } = useMutation(unMarkFavoriteFood);
+
   const foods = data?.data ?? [];
+  const favoriteFoods = favoriteFoodsData?.data ?? [];
 
   useEffect(() => {
     if (foods.length > 0 && filteredFoods.length === 0) {
@@ -76,6 +147,18 @@ function Foods() {
     setFilteredFoods(foodsMatches);
   };
 
+  const createHandleClickOnFavorite = (foodId: string) => () => {
+    favorite(foodId);
+  };
+
+  const createHandleClickUnFavorite = (foodId: string) => () => {
+    unFavorite(foodId);
+  };
+
+  const getFavoriteId = (foodId: string) => {
+    return favoriteFoods.find(({ food }) => food === foodId)?.id;
+  };
+
   return (
     <FoodsWrapper>
       <FoodSearchForm onSubmit={handleSubmit} />
@@ -84,23 +167,41 @@ function Foods() {
       ) : (
         <ul>
           {filteredFoods.map(
-            ({ id, name, portionDisplayName, portionAmount, calories }) => (
-              <li key={id} className="mb-4">
-                <article className="grid grid-cols-2">
-                  <h2 className="col-start-1">{name}</h2>
-                  <h3 className="col-start-1">
-                    {portionAmount} {portionDisplayName} has {calories} calories
-                  </h3>
-                  <Link
-                    className="col-start-2 row-start-1 row-end-3 flex items-center justify-self-end shadow bg-purple-500 hover:bg-purple-400 text-white font-bold py-2 px-4"
-                    to={`/food/${id}`}
-                    state={{ previousLocation: location }}
-                  >
-                    View details
-                  </Link>
-                </article>
-              </li>
-            )
+            ({ id, name, portionDisplayName, portionAmount, calories }) => {
+              const favoriteId = getFavoriteId(id);
+              const isCurrentFoodFavorite = !!favoriteId;
+
+              return (
+                <li key={id} className="mb-4">
+                  <article className="grid gap-x-4 md:gap-x-0 grid-cols-2 md:grid-cols-[1fr_60px_130px]">
+                    <h2 className="col-start-1 col-end-3 md:col-end-2">
+                      {name}
+                    </h2>
+                    <h3 className="col-start-1 col-end-3 md:col-end-2 mb-2 md:mb-0">
+                      {portionAmount} {portionDisplayName} has {calories}{" "}
+                      calories
+                    </h3>
+                    <button
+                      onClick={
+                        isCurrentFoodFavorite
+                          ? createHandleClickUnFavorite(favoriteId)
+                          : createHandleClickOnFavorite(id)
+                      }
+                      className="col-start-1 col-end-2 md:col-start-2 md:col-end-3 md:row-start-1 md:row-end-3 md:justify-self-start flex justify-center items-center shadow bg-purple-500 hover:bg-purple-400 focus:shadow-outline text-white font-bold py-2 px-4"
+                    >
+                      <Star filled={isCurrentFoodFavorite} />
+                    </button>
+                    <Link
+                      className="col-start-2 col-end-3 md:col-start-3 md:col-end-4 md:row-start-1 md:row-end-3 md:justify-self-end flex justify-center md:justify-start items-center shadow bg-purple-500 hover:bg-purple-400 text-white font-bold py-2 px-4"
+                      to={`/food/${id}`}
+                      state={{ previousLocation: location }}
+                    >
+                      View details
+                    </Link>
+                  </article>
+                </li>
+              );
+            }
           )}
         </ul>
       )}
