@@ -1,6 +1,7 @@
 import { FormEventHandler, useEffect, useState } from "react";
 import { useMutation, useQuery } from "react-query";
 import { Link, useLocation } from "react-router-dom";
+import { queryClient } from "..";
 import Star from "../components/icons/Star";
 import { Food } from "../types/Food";
 import FoodSearchForm from "./components/food-search-form";
@@ -99,8 +100,44 @@ function Foods() {
     "favorite-foods",
     getAllFavoriteFoods
   );
-  const { mutate: favorite } = useMutation(markFavoriteFood);
-  const { mutate: unFavorite } = useMutation(unMarkFavoriteFood);
+  const { mutate: favorite } = useMutation(markFavoriteFood, {
+    onSuccess: (response) => {
+      const previousFavoriteFoodsResponse =
+        queryClient.getQueryData<TAllFavoriteFoodsResponse>("favorite-foods");
+
+      if (previousFavoriteFoodsResponse) {
+        const updatedFavoriteFoodsResponse: TAllFavoriteFoodsResponse = {
+          ...previousFavoriteFoodsResponse,
+          data: [...previousFavoriteFoodsResponse.data, response.data],
+        };
+
+        queryClient.setQueryData(
+          "favorite-foods",
+          updatedFavoriteFoodsResponse
+        );
+      }
+    },
+  });
+  const { mutate: unFavorite } = useMutation(unMarkFavoriteFood, {
+    onSuccess: (_, favoriteId) => {
+      const previousFavoriteFoodsResponse =
+        queryClient.getQueryData<TAllFavoriteFoodsResponse>("favorite-foods");
+
+      if (previousFavoriteFoodsResponse) {
+        const updatedFavoriteFoodsResponse: TAllFavoriteFoodsResponse = {
+          ...previousFavoriteFoodsResponse,
+          data: previousFavoriteFoodsResponse.data.filter(
+            ({ id }) => id !== favoriteId
+          ),
+        };
+
+        queryClient.setQueryData(
+          "favorite-foods",
+          updatedFavoriteFoodsResponse
+        );
+      }
+    },
+  });
 
   const foods = data?.data ?? [];
   const favoriteFoods = favoriteFoodsData?.data ?? [];
