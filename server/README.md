@@ -1,6 +1,14 @@
-# Why?
+[![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
 
-To learn more 🤞
+# Calorie Counter Server (3)
+
+Server built to expose data related with food, its calories and much more related details. The goal of this project ir purely learning, so you will probably find parts of the code that do not follow the community best practices, but if that's the case fell free to open a PR and let's make this even better.
+
+## Built with
+
+- REST API generator [Calm API](https://github.com/sunilksamanta/calmapi)
+- MongoDB
+- Docker
 
 ## How to start?
 
