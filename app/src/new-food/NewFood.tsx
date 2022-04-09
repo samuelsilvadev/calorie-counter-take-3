@@ -1,8 +1,8 @@
 import { ChangeEventHandler, FormEventHandler, useReducer } from "react";
 import { useMutation } from "react-query";
-import { queryClient } from "..";
-import type { TAllFoodsResponse } from "../foods/Foods";
-import type { Food } from "../types/Food";
+import { queryClient } from "queryClientSetup";
+import type { TAllFoodsResponse } from "foods/Foods";
+import type { Food } from "types/Food";
 
 type NewFoodFormState = {
   name: string;

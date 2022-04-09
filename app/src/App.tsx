@@ -1,8 +1,8 @@
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
-import Layout from "./components/layout";
-import FoodDetails from "./food-details/FoodDetails";
-import Foods from "./foods/Foods";
-import NewFood from "./new-food/NewFood";
+import Layout from "components/layout";
+import FoodDetails from "food-details/FoodDetails";
+import Foods from "foods/Foods";
+import NewFood from "new-food/NewFood";
 
 function App() {
   const location = useLocation();

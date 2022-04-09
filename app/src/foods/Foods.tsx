@@ -1,9 +1,9 @@
 import { FormEventHandler, useEffect, useState } from "react";
 import { useMutation, useQuery } from "react-query";
 import { Link, useLocation } from "react-router-dom";
-import { queryClient } from "..";
-import Star from "../components/icons/Star";
-import { Food } from "../types/Food";
+import { queryClient } from "queryClientSetup";
+import Star from "components/icons/Star";
+import { Food } from "types/Food";
 import FoodSearchForm from "./components/food-search-form";
 import FoodsWrapper from "./components/foods-wrapper";
 

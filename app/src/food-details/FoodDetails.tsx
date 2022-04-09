@@ -7,7 +7,7 @@ import {
 } from "react";
 import { useQuery } from "react-query";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { Food } from "../types/Food";
+import type { Food } from "types/Food";
 
 function getFood(id: string) {
   return fetch(process.env.REACT_APP_API_URL + "/foods/" + id).then(
