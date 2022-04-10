@@ -6,6 +6,7 @@ import Star from "components/icons/Star";
 import { Food } from "types/Food";
 import FoodSearchForm from "./components/food-search-form";
 import FoodsWrapper from "./components/foods-wrapper";
+import { getUser } from "App";
 
 function getAllFoods(): Promise<TAllFoodsResponse> {
   return fetch(process.env.REACT_APP_API_URL + "/foods").then((response) =>
@@ -19,7 +20,13 @@ function getAllFavoriteFoods(): Promise<TAllFavoriteFoodsResponse> {
   );
 }
 
-function markFavoriteFood(foodId: string): Promise<TMarkFavoriteFoodResponse> {
+function markFavoriteFood({
+  foodId,
+  userId,
+}: {
+  foodId: string;
+  userId: string;
+}): Promise<TMarkFavoriteFoodResponse> {
   return fetch(process.env.REACT_APP_API_URL + "/favorite-foods", {
     method: "POST",
     headers: {
@@ -27,8 +34,7 @@ function markFavoriteFood(foodId: string): Promise<TMarkFavoriteFoodResponse> {
     },
     body: JSON.stringify({
       food: foodId,
-      // TODO: replace with user id configured from REACT_APP_DEFAULT_USER_EMAIL
-      user: "624f5e78390cd24867281a8c",
+      user: userId,
     }),
   }).then((response) => response.json());
 }
@@ -87,6 +93,7 @@ type TUnMarkFavoriteFoodResponse = {
 function Foods() {
   const [filteredFoods, setFilteredFoods] = useState<Food[]>([]);
   const location = useLocation();
+  const { data: userData } = useQuery("user", getUser);
   const { isLoading, data, error } = useQuery<TAllFoodsResponse>(
     "foods",
     getAllFoods,
@@ -141,6 +148,7 @@ function Foods() {
 
   const foods = data?.data ?? [];
   const favoriteFoods = favoriteFoodsData?.data ?? [];
+  const userId = userData?.data?.[0].id;
 
   useEffect(() => {
     if (foods.length > 0 && filteredFoods.length === 0) {
@@ -185,7 +193,9 @@ function Foods() {
   };
 
   const createHandleClickOnFavorite = (foodId: string) => () => {
-    favorite(foodId);
+    if (userId) {
+      favorite({ foodId, userId });
+    }
   };
 
   const createHandleClickUnFavorite = (foodId: string) => () => {
